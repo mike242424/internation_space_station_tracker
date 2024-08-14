@@ -2,11 +2,15 @@ import requests
 import datetime as dt
 import smtplib
 import time
+from dotenv import load_dotenv
+import os
 
-MY_LAT = 32.80129911828599
-MY_LNG = -80.002434
-MY_EMAIL = 'mike.test.2424@gmail.com'
-MY_PASSWORD = 'pxrt sqnz mqjq kaxc'
+load_dotenv()
+
+MY_LAT = os.getenv('MY_LAT')
+MY_LNG = os.getenv('MY_LNG')
+MY_EMAIL = os.getenv('MY_EMAIL')
+MY_PASSWORD = os.getenv('MY_PASSWORD')
 current_time = dt.datetime.now()
 
 
@@ -16,7 +20,7 @@ def is_iss_overhead():
     iss_lat = float(iss_now_response.json()['iss_position']['latitude'])
     iss_lng = float(iss_now_response.json()['iss_position']['longitude'])
 
-    if (iss_lat - 5) <= MY_LAT <= (iss_lat + 5) and (iss_lng - 5) <= MY_LNG <= (iss_lng + 5):
+    if (iss_lat - 5) <= float(MY_LAT) <= (iss_lat + 5) and (iss_lng - 5) <= float(MY_LNG) <= (iss_lng + 5):
         return True
     else:
         return False
@@ -24,7 +28,7 @@ def is_iss_overhead():
 
 def is_night():
     parameters = {"lat": MY_LAT, "lng": MY_LNG, "formatted": 0}
-    sunrise_sunset_response = requests.get(f'https://api.sunrise-sunset.org/json', params=parameters)
+    sunrise_sunset_response = requests.get('https://api.sunrise-sunset.org/json', params=parameters)
     sunrise_sunset_response.raise_for_status()
     sunset_hour = sunrise_sunset_response.json()['results']['sunset'].split('T')[1].split(':')[0]
     sunrise_hour = sunrise_sunset_response.json()['results']['sunrise'].split('T')[1].split(':')[0]
